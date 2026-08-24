@@ -1,0 +1,36 @@
+{
+  "name": "@managed-oss/atlasbase",
+  "version": "0.1.0",
+  "description": "Structured knowledge with revision provenance, permissions, and citation-grounded answers.",
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rohanarun/atlasbase.git"
+  },
+  "bugs": {
+    "url": "https://github.com/rohanarun/atlasbase/issues"
+  },
+  "homepage": "https://github.com/rohanarun/atlasbase#readme",
+  "engines": {
+    "node": ">=20.11"
+  },
+  "bin": {
+    "atlasbase": "src/cli.mjs",
+    "atlasbase-mcp": "src/mcp.mjs"
+  },
+  "files": [
+    "src",
+    "web",
+    "product-manifest.json",
+    "LICENSE",
+    "README.md",
+    "SECURITY.md",
+    "Dockerfile"
+  ],
+  "scripts": {
+    "start": "node src/web-server.mjs",
+    "test": "node --test --test-concurrency=1",
+    "verify": "node scripts/verify-manifest.mjs && node --test --test-concurrency=1"
+  }
+}

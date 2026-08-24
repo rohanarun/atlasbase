@@ -1,0 +1,665 @@
+{
+  "schemaVersion": 1,
+  "release": {
+    "productVersion": "0.1.0",
+    "backendRelease": "v0.4.0",
+    "backendCommit": "4ff94afc860109e683c56c3acffedb8a6c233e03",
+    "backendSourceSnapshotSha256": "df03dff119034858ec0a25b1171226ff3539d015318c15b5a2359eab49118dcf",
+    "generatedAt": "2026-08-24T00:00:00.000Z",
+    "generator": "managed-oss-cloud/scripts/generate-product-repositories.mjs"
+  },
+  "product": {
+    "slug": "atlasbase",
+    "command": "atlasbase",
+    "mcpPrefix": "atlasbase",
+    "environmentPrefix": "ATLASBASE",
+    "name": "AtlasBase",
+    "tagline": "Structured knowledge with revision provenance, permissions, and citation-grounded answers.",
+    "repository": "https://github.com/rohanarun/atlasbase",
+    "license": "MIT",
+    "accent": "#70d67b",
+    "accentDark": "#277732"
+  },
+  "module": {
+    "id": "knowledge",
+    "category": "Knowledge base",
+    "description": "Structured documentation with semantic retrieval, source citations, and answer generation.",
+    "minimumHostedPlan": "starter",
+    "resourceClass": "shared",
+    "recordTypes": [
+      "space",
+      "page",
+      "block",
+      "attachment"
+    ],
+    "aiCapabilities": [
+      "answer with citations",
+      "draft page",
+      "detect stale guidance"
+    ]
+  },
+  "backend": {
+    "defaultUrl": "https://cloud.getsupers.com",
+    "workspaceEndpoint": "/api/suite/workspace",
+    "actionEndpointPattern": "/api/suite/modules/knowledge/actions/{actionId}",
+    "authentication": "Bearer API token",
+    "databaseBoundary": "All shared database access and tenant isolation remain behind the managed-oss-cloud API."
+  },
+  "cleanRoom": {
+    "statement": "Original clean-room implementation of the knowledge base software category, designed and written independently.",
+    "sourceBoundary": "Public category behavior informed requirements; implementation and product identity are original."
+  },
+  "actions": [
+    {
+      "id": "library-create",
+      "moduleId": "knowledge",
+      "title": "Create governed library",
+      "description": "Create a knowledge library with ownership, default access, locale, and review cadence.",
+      "operation": "command",
+      "recordType": "knowledge-library",
+      "requiredFields": [
+        "name",
+        "defaultAccess",
+        "locale",
+        "reviewCadenceDays",
+        "idempotencyKey"
+      ],
+      "engine": "core",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "name",
+          "defaultAccess",
+          "locale",
+          "reviewCadenceDays",
+          "idempotencyKey"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "defaultAccess": {
+            "enum": [
+              "private",
+              "workspace",
+              "public"
+            ]
+          },
+          "locale": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20
+          },
+          "reviewCadenceDays": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 3650
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9._:-]{16,200}$"
+          }
+        },
+        "additionalProperties": false
+      },
+      "exampleInput": {
+        "name": "Support handbook",
+        "defaultAccess": "workspace",
+        "locale": "en-US",
+        "reviewCadenceDays": 90,
+        "idempotencyKey": "knowledge.library-create.sample-0001"
+      },
+      "requiredScope": "write",
+      "mcpToolName": "knowledge_library_create",
+      "cliExample": "supersuite action knowledge library-create '{\"name\":\"Support handbook\",\"defaultAccess\":\"workspace\",\"locale\":\"en-US\",\"reviewCadenceDays\":90,\"idempotencyKey\":\"knowledge.library-create.sample-0001\"}'",
+      "risk": "low",
+      "destructive": false,
+      "externalEffect": false,
+      "idempotent": true,
+      "backendMcpToolName": "knowledge_library_create",
+      "productMcpToolName": "atlasbase_library_create",
+      "productCliExample": "atlasbase action library-create '{\"name\":\"Support handbook\",\"defaultAccess\":\"workspace\",\"locale\":\"en-US\",\"reviewCadenceDays\":90,\"idempotencyKey\":\"knowledge.library-create.sample-0001\"}'"
+    },
+    {
+      "id": "page-revision-draft",
+      "moduleId": "knowledge",
+      "title": "Draft immutable page revision",
+      "description": "Create a content-addressed page revision with explicit source links and parent revision.",
+      "operation": "command",
+      "recordType": "page-revision",
+      "requiredFields": [
+        "libraryId",
+        "title",
+        "content",
+        "sourceIds",
+        "idempotencyKey"
+      ],
+      "engine": "core",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "libraryId",
+          "title",
+          "content",
+          "sourceIds",
+          "idempotencyKey"
+        ],
+        "properties": {
+          "libraryId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
+          },
+          "content": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100000
+          },
+          "sourceIds": {
+            "type": "array",
+            "maxItems": 500,
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "parentRevisionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9._:-]{16,200}$"
+          }
+        },
+        "additionalProperties": false
+      },
+      "exampleInput": {
+        "libraryId": "00000000-0000-4000-8000-000000000100",
+        "title": "Refund policy",
+        "content": "Reviewed policy content",
+        "sourceIds": [
+          "00000000-0000-4000-8000-000000000101"
+        ],
+        "idempotencyKey": "knowledge.page-revision-draft.sample-0001"
+      },
+      "requiredScope": "write",
+      "mcpToolName": "knowledge_page_revision_draft",
+      "cliExample": "supersuite action knowledge page-revision-draft '{\"libraryId\":\"00000000-0000-4000-8000-000000000100\",\"title\":\"Refund policy\",\"content\":\"Reviewed policy content\",\"sourceIds\":[\"00000000-0000-4000-8000-000000000101\"],\"idempotencyKey\":\"knowledge.page-revision-draft.sample-0001\"}'",
+      "risk": "low",
+      "destructive": false,
+      "externalEffect": false,
+      "idempotent": true,
+      "backendMcpToolName": "knowledge_page_revision_draft",
+      "productMcpToolName": "atlasbase_page_revision_draft",
+      "productCliExample": "atlasbase action page-revision-draft '{\"libraryId\":\"00000000-0000-4000-8000-000000000100\",\"title\":\"Refund policy\",\"content\":\"Reviewed policy content\",\"sourceIds\":[\"00000000-0000-4000-8000-000000000101\"],\"idempotencyKey\":\"knowledge.page-revision-draft.sample-0001\"}'"
+    },
+    {
+      "id": "page-revision-publish",
+      "moduleId": "knowledge",
+      "title": "Publish exact page revision",
+      "description": "Publish a reviewed content hash to its configured audience without rewriting prior revisions.",
+      "operation": "command",
+      "recordType": "page-revision",
+      "requiredFields": [
+        "revisionId",
+        "contentHash",
+        "idempotencyKey",
+        "dryRun"
+      ],
+      "engine": "core",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "revisionId",
+          "contentHash",
+          "idempotencyKey",
+          "dryRun"
+        ],
+        "properties": {
+          "revisionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "contentHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9._:-]{16,200}$"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "approval": {
+            "type": "object",
+            "required": [
+              "approved",
+              "approvedBy",
+              "approvedAt",
+              "decisionId",
+              "reason"
+            ],
+            "properties": {
+              "approved": {
+                "const": true
+              },
+              "approvedBy": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "approvedAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "decisionId": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9._:-]{16,200}$"
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1000
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      },
+      "exampleInput": {
+        "revisionId": "00000000-0000-4000-8000-000000000100",
+        "contentHash": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "idempotencyKey": "knowledge.page-revision-publish.sample-0001",
+        "dryRun": true
+      },
+      "requiredScope": "write",
+      "mcpToolName": "knowledge_page_revision_publish",
+      "cliExample": "supersuite action knowledge page-revision-publish '{\"revisionId\":\"00000000-0000-4000-8000-000000000100\",\"contentHash\":\"eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee\",\"idempotencyKey\":\"knowledge.page-revision-publish.sample-0001\",\"dryRun\":true}'",
+      "risk": "high",
+      "destructive": false,
+      "externalEffect": true,
+      "idempotent": true,
+      "backendMcpToolName": "knowledge_page_revision_publish",
+      "productMcpToolName": "atlasbase_page_revision_publish",
+      "productCliExample": "atlasbase action page-revision-publish '{\"revisionId\":\"00000000-0000-4000-8000-000000000100\",\"contentHash\":\"eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee\",\"idempotencyKey\":\"knowledge.page-revision-publish.sample-0001\",\"dryRun\":true}'"
+    },
+    {
+      "id": "source-link",
+      "moduleId": "knowledge",
+      "title": "Link verifiable source",
+      "description": "Attach a source locator, observation time, content hash, and trust note to a page revision.",
+      "operation": "command",
+      "recordType": "knowledge-source",
+      "requiredFields": [
+        "revisionId",
+        "locator",
+        "observedAt",
+        "contentHash",
+        "trustNote",
+        "idempotencyKey"
+      ],
+      "engine": "core",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "revisionId",
+          "locator",
+          "observedAt",
+          "contentHash",
+          "trustNote",
+          "idempotencyKey"
+        ],
+        "properties": {
+          "revisionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "locator": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "observedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "contentHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "trustNote": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9._:-]{16,200}$"
+          }
+        },
+        "additionalProperties": false
+      },
+      "exampleInput": {
+        "revisionId": "00000000-0000-4000-8000-000000000100",
+        "locator": "internal-policy-42",
+        "observedAt": "2026-08-24T12:00:00.000Z",
+        "contentHash": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "trustNote": "Approved policy record",
+        "idempotencyKey": "knowledge.source-link.sample-0001"
+      },
+      "requiredScope": "write",
+      "mcpToolName": "knowledge_source_link",
+      "cliExample": "supersuite action knowledge source-link '{\"revisionId\":\"00000000-0000-4000-8000-000000000100\",\"locator\":\"internal-policy-42\",\"observedAt\":\"2026-08-24T12:00:00.000Z\",\"contentHash\":\"ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\",\"trustNote\":\"Approved policy record\",\"idempotencyKey\":\"knowledge.source-link.sample-0001\"}'",
+      "risk": "low",
+      "destructive": false,
+      "externalEffect": false,
+      "idempotent": true,
+      "backendMcpToolName": "knowledge_source_link",
+      "productMcpToolName": "atlasbase_source_link",
+      "productCliExample": "atlasbase action source-link '{\"revisionId\":\"00000000-0000-4000-8000-000000000100\",\"locator\":\"internal-policy-42\",\"observedAt\":\"2026-08-24T12:00:00.000Z\",\"contentHash\":\"ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\",\"trustNote\":\"Approved policy record\",\"idempotencyKey\":\"knowledge.source-link.sample-0001\"}'"
+    },
+    {
+      "id": "answer-propose",
+      "moduleId": "knowledge",
+      "title": "Propose cited knowledge answer",
+      "description": "Queue an answer constrained to selected published revisions with per-claim citations and abstention.",
+      "operation": "ai",
+      "recordType": "ai-request-audit",
+      "requiredFields": [
+        "question",
+        "evidenceIds",
+        "idempotencyKey"
+      ],
+      "engine": "core",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "question",
+          "evidenceIds",
+          "idempotencyKey"
+        ],
+        "properties": {
+          "question": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4000
+          },
+          "evidenceIds": {
+            "type": "array",
+            "maxItems": 500,
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9._:-]{16,200}$"
+          }
+        },
+        "additionalProperties": false
+      },
+      "exampleInput": {
+        "question": "What is the refund window?",
+        "evidenceIds": [
+          "00000000-0000-4000-8000-000000000101"
+        ],
+        "idempotencyKey": "knowledge.answer-propose.sample-0001"
+      },
+      "requiredScope": "ai",
+      "mcpToolName": "knowledge_answer_propose",
+      "cliExample": "supersuite action knowledge answer-propose '{\"question\":\"What is the refund window?\",\"evidenceIds\":[\"00000000-0000-4000-8000-000000000101\"],\"idempotencyKey\":\"knowledge.answer-propose.sample-0001\"}'",
+      "risk": "moderate",
+      "destructive": false,
+      "externalEffect": false,
+      "idempotent": true,
+      "backendMcpToolName": "knowledge_answer_propose",
+      "productMcpToolName": "atlasbase_answer_propose",
+      "productCliExample": "atlasbase action answer-propose '{\"question\":\"What is the refund window?\",\"evidenceIds\":[\"00000000-0000-4000-8000-000000000101\"],\"idempotencyKey\":\"knowledge.answer-propose.sample-0001\"}'"
+    },
+    {
+      "id": "staleness-audit-propose",
+      "moduleId": "knowledge",
+      "title": "Propose staleness audit",
+      "description": "Queue a source-clock comparison that flags unsupported or expired claims without editing pages.",
+      "operation": "ai",
+      "recordType": "ai-request-audit",
+      "requiredFields": [
+        "libraryId",
+        "instruction",
+        "evidenceIds",
+        "idempotencyKey"
+      ],
+      "engine": "core",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "libraryId",
+          "instruction",
+          "evidenceIds",
+          "idempotencyKey"
+        ],
+        "properties": {
+          "libraryId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "instruction": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4000
+          },
+          "evidenceIds": {
+            "type": "array",
+            "maxItems": 1000,
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9._:-]{16,200}$"
+          }
+        },
+        "additionalProperties": false
+      },
+      "exampleInput": {
+        "libraryId": "00000000-0000-4000-8000-000000000100",
+        "instruction": "Find claims whose sources are older than policy.",
+        "evidenceIds": [
+          "00000000-0000-4000-8000-000000000101"
+        ],
+        "idempotencyKey": "knowledge.staleness-audit-propose.sample-0001"
+      },
+      "requiredScope": "ai",
+      "mcpToolName": "knowledge_staleness_audit_propose",
+      "cliExample": "supersuite action knowledge staleness-audit-propose '{\"libraryId\":\"00000000-0000-4000-8000-000000000100\",\"instruction\":\"Find claims whose sources are older than policy.\",\"evidenceIds\":[\"00000000-0000-4000-8000-000000000101\"],\"idempotencyKey\":\"knowledge.staleness-audit-propose.sample-0001\"}'",
+      "risk": "moderate",
+      "destructive": false,
+      "externalEffect": false,
+      "idempotent": true,
+      "backendMcpToolName": "knowledge_staleness_audit_propose",
+      "productMcpToolName": "atlasbase_staleness_audit_propose",
+      "productCliExample": "atlasbase action staleness-audit-propose '{\"libraryId\":\"00000000-0000-4000-8000-000000000100\",\"instruction\":\"Find claims whose sources are older than policy.\",\"evidenceIds\":[\"00000000-0000-4000-8000-000000000101\"],\"idempotencyKey\":\"knowledge.staleness-audit-propose.sample-0001\"}'"
+    },
+    {
+      "id": "permission-grant",
+      "moduleId": "knowledge",
+      "title": "Grant scoped library access",
+      "description": "Grant view or edit access to one workspace principal with expiry and no public token.",
+      "operation": "command",
+      "recordType": "knowledge-grant",
+      "requiredFields": [
+        "libraryId",
+        "principalId",
+        "permission",
+        "expiresAt",
+        "idempotencyKey"
+      ],
+      "engine": "core",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "libraryId",
+          "principalId",
+          "permission",
+          "expiresAt",
+          "idempotencyKey"
+        ],
+        "properties": {
+          "libraryId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "principalId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "permission": {
+            "enum": [
+              "view",
+              "edit"
+            ]
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9._:-]{16,200}$"
+          }
+        },
+        "additionalProperties": false
+      },
+      "exampleInput": {
+        "libraryId": "00000000-0000-4000-8000-000000000100",
+        "principalId": "00000000-0000-4000-8000-000000000001",
+        "permission": "view",
+        "expiresAt": "2027-08-24T12:00:00.000Z",
+        "idempotencyKey": "knowledge.permission-grant.sample-0001"
+      },
+      "requiredScope": "write",
+      "mcpToolName": "knowledge_permission_grant",
+      "cliExample": "supersuite action knowledge permission-grant '{\"libraryId\":\"00000000-0000-4000-8000-000000000100\",\"principalId\":\"00000000-0000-4000-8000-000000000001\",\"permission\":\"view\",\"expiresAt\":\"2027-08-24T12:00:00.000Z\",\"idempotencyKey\":\"knowledge.permission-grant.sample-0001\"}'",
+      "risk": "low",
+      "destructive": false,
+      "externalEffect": false,
+      "idempotent": true,
+      "backendMcpToolName": "knowledge_permission_grant",
+      "productMcpToolName": "atlasbase_permission_grant",
+      "productCliExample": "atlasbase action permission-grant '{\"libraryId\":\"00000000-0000-4000-8000-000000000100\",\"principalId\":\"00000000-0000-4000-8000-000000000001\",\"permission\":\"view\",\"expiresAt\":\"2027-08-24T12:00:00.000Z\",\"idempotencyKey\":\"knowledge.permission-grant.sample-0001\"}'"
+    },
+    {
+      "id": "page-export",
+      "moduleId": "knowledge",
+      "title": "Export exact page revision",
+      "description": "Create a pinned export manifest for one immutable revision and its source bibliography.",
+      "operation": "command",
+      "recordType": "export-job",
+      "requiredFields": [
+        "revisionId",
+        "format",
+        "idempotencyKey"
+      ],
+      "engine": "core",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "revisionId",
+          "format",
+          "idempotencyKey"
+        ],
+        "properties": {
+          "revisionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "format": {
+            "enum": [
+              "canonical-json",
+              "markdown",
+              "html",
+              "pdf"
+            ]
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9._:-]{16,200}$"
+          }
+        },
+        "additionalProperties": false
+      },
+      "exampleInput": {
+        "revisionId": "00000000-0000-4000-8000-000000000100",
+        "format": "markdown",
+        "idempotencyKey": "knowledge.page-export.sample-0001"
+      },
+      "requiredScope": "write",
+      "mcpToolName": "knowledge_page_export",
+      "cliExample": "supersuite action knowledge page-export '{\"revisionId\":\"00000000-0000-4000-8000-000000000100\",\"format\":\"markdown\",\"idempotencyKey\":\"knowledge.page-export.sample-0001\"}'",
+      "risk": "low",
+      "destructive": false,
+      "externalEffect": false,
+      "idempotent": true,
+      "backendMcpToolName": "knowledge_page_export",
+      "productMcpToolName": "atlasbase_page_export",
+      "productCliExample": "atlasbase action page-export '{\"revisionId\":\"00000000-0000-4000-8000-000000000100\",\"format\":\"markdown\",\"idempotencyKey\":\"knowledge.page-export.sample-0001\"}'"
+    },
+    {
+      "id": "import-preview",
+      "moduleId": "knowledge",
+      "title": "Preview knowledge import",
+      "description": "Validate a bounded import manifest, links, hashes, and conflicts without creating pages.",
+      "operation": "read",
+      "recordType": "import-preview",
+      "requiredFields": [
+        "libraryId",
+        "manifest"
+      ],
+      "engine": "core",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "libraryId",
+          "manifest"
+        ],
+        "properties": {
+          "libraryId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "manifest": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      },
+      "exampleInput": {
+        "libraryId": "00000000-0000-4000-8000-000000000100",
+        "manifest": {
+          "pages": []
+        }
+      },
+      "requiredScope": "read",
+      "mcpToolName": "knowledge_import_preview",
+      "cliExample": "supersuite action knowledge import-preview '{\"libraryId\":\"00000000-0000-4000-8000-000000000100\",\"manifest\":{\"pages\":[]}}'",
+      "risk": "low",
+      "destructive": false,
+      "externalEffect": false,
+      "idempotent": false,
+      "backendMcpToolName": "knowledge_import_preview",
+      "productMcpToolName": "atlasbase_import_preview",
+      "productCliExample": "atlasbase action import-preview '{\"libraryId\":\"00000000-0000-4000-8000-000000000100\",\"manifest\":{\"pages\":[]}}'"
+    }
+  ]
+}
