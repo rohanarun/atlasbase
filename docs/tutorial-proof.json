@@ -1,0 +1,169 @@
+{
+  "schema": "managed-oss-functional-tutorial.v1",
+  "product": {
+    "slug": "atlasbase",
+    "name": "AtlasBase",
+    "moduleId": "knowledge",
+    "version": "0.3.1",
+    "manifestSha256": "d5aa94b38f78b23d91c316d4435e86be00f084786b40d368316f8911f41ed656"
+  },
+  "backend": {
+    "release": "v0.4.4",
+    "commit": "148abce99b91d8b9fdc8aa41c3f0eba283796db4"
+  },
+  "testedAt": "2026-08-25T21:52:16.382Z",
+  "browser": {
+    "engine": "Chromium",
+    "version": "151.0.7922.174",
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    }
+  },
+  "functionalProof": {
+    "action": {
+      "id": "library-create",
+      "title": "Create governed library",
+      "httpStatus": 200
+    },
+    "record": {
+      "id": "b7187ed8-d8cc-49ec-8380-fb75859ba629",
+      "recordType": "knowledge-library",
+      "title": "AtlasBase tutorial workspace",
+      "state": "active"
+    },
+    "detail": {
+      "httpStatus": 200,
+      "matched": true
+    },
+    "assertions": [
+      "browser-authenticated-real-backend",
+      "guided-form-submitted",
+      "action-http-200",
+      "durable-record-returned",
+      "record-detail-http-200",
+      "exact-record-reopened-in-ui"
+    ]
+  },
+  "timeline": [
+    {
+      "stepId": "overview",
+      "observedLabel": "Meet AtlasBase",
+      "observedFact": "Open the real AtlasBase workspace and identify its core workflow.",
+      "startMs": 0,
+      "endMs": 2250
+    },
+    {
+      "stepId": "connect",
+      "observedLabel": "Connect the workspace",
+      "observedFact": "Authenticate this browser to the isolated shared backend and load durable records.",
+      "startMs": 2250,
+      "endMs": 5500
+    },
+    {
+      "stepId": "configure",
+      "observedLabel": "Create governed library",
+      "observedFact": "Complete the guided, contract-validated form for the product's primary workflow.",
+      "startMs": 5500,
+      "endMs": 8000
+    },
+    {
+      "stepId": "execute",
+      "observedLabel": "Run the real workflow",
+      "observedFact": "Submit the action to the shared backend and require a successful durable result.",
+      "startMs": 8000,
+      "endMs": 10500
+    },
+    {
+      "stepId": "inspect",
+      "observedLabel": "Inspect the saved record",
+      "observedFact": "Search the product record view and reopen the exact record returned by the workflow.",
+      "startMs": 10500,
+      "endMs": 17000
+    }
+  ],
+  "explanation": {
+    "title": "Creating a Governed Library in AtlasBase",
+    "summary": "Learn how to connect your workspace, configure and execute a governed library creation workflow, and inspect the verified record in AtlasBase.",
+    "cues": [
+      {
+        "stepId": "overview",
+        "startMs": 0,
+        "endMs": 2250,
+        "label": "Meet AtlasBase",
+        "subtitle": "Explore the AtlasBase knowledge workspace overview and available actions."
+      },
+      {
+        "stepId": "connect",
+        "startMs": 2250,
+        "endMs": 5500,
+        "label": "Connect the workspace",
+        "subtitle": "Connect your workspace session to enable backend operations."
+      },
+      {
+        "stepId": "configure",
+        "startMs": 5500,
+        "endMs": 8000,
+        "label": "Configure governed library",
+        "subtitle": "Fill in the library details including name, access, and review cadence."
+      },
+      {
+        "stepId": "execute",
+        "startMs": 8000,
+        "endMs": 10500,
+        "label": "Run the workflow",
+        "subtitle": "Execute the library creation command and confirm execution output."
+      },
+      {
+        "stepId": "inspect",
+        "startMs": 10500,
+        "endMs": 17000,
+        "label": "Inspect the saved record",
+        "subtitle": "Open the records view to verify the new durable knowledge library record."
+      }
+    ],
+    "generation": {
+      "provider": "OpenRouter",
+      "model": "google/gemini-3.7-flash",
+      "requestedModel": "google/gemini-3.7-flash",
+      "responseModel": "google/gemini-3.7-flash",
+      "responseId": "gen-1787694731-haNKhjjbEw9qkqrFo6S0",
+      "responseCreatedAt": "2026-08-25T21:52:11.000Z",
+      "input": {
+        "rawVideoSha256": "fd8a78ffb366d61be4ac64f1386f5a469fb67d979b37c00c6b50fffc8d969893",
+        "workflowFactsSha256": "c478c792a9adc4b53a737f9e4e3d2c31f22814dbc548e0f91a0ef2acfa389c25"
+      },
+      "usage": {
+        "promptTokens": 1558,
+        "completionTokens": 884,
+        "totalTokens": 2442
+      }
+    }
+  },
+  "video": {
+    "raw": {
+      "sha256": "fd8a78ffb366d61be4ac64f1386f5a469fb67d979b37c00c6b50fffc8d969893",
+      "codec": "h264",
+      "width": 1280,
+      "height": 720,
+      "durationSeconds": 17,
+      "sizeBytes": 376341
+    },
+    "final": {
+      "file": "docs/tutorial.mp4",
+      "sha256": "c1fc616d7f8e2818ef3084bbab8b46d72bc463f72a3b985b878b3639901857b2",
+      "codec": "h264",
+      "width": 1280,
+      "height": 720,
+      "durationSeconds": 17,
+      "sizeBytes": 411565
+    },
+    "subtitles": {
+      "file": "docs/tutorial.srt",
+      "sha256": "819d56ff8806f4a07f9d9d074fcda81752c102b59ec146f38934f450f966363f",
+      "format": "SubRip"
+    },
+    "overlaysBurnedIn": true,
+    "silent": true
+  }
+}

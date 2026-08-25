@@ -1,0 +1,19 @@
+1
+00:00:00,000 --> 00:00:02,250
+Explore the AtlasBase knowledge workspace overview and available actions.
+
+2
+00:00:02,250 --> 00:00:05,500
+Connect your workspace session to enable backend operations.
+
+3
+00:00:05,500 --> 00:00:08,000
+Fill in the library details including name, access, and review cadence.
+
+4
+00:00:08,000 --> 00:00:10,500
+Execute the library creation command and confirm execution output.
+
+5
+00:00:10,500 --> 00:00:17,000
+Open the records view to verify the new durable knowledge library record.
